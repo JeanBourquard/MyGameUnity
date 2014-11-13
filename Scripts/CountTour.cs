@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class CountTour : MonoBehaviour {
 
@@ -15,6 +16,7 @@ public class CountTour : MonoBehaviour {
 	private Material highlightMaterial;		//material used to highlight a case
 	private Material basicMaterial;			//material used to set case material back to default
 	private AstarSearch aStar;				//used to access functions of AstarScript
+	private List<NodeClass> aStarResult;	//used to store the result of the Astar algorithm
 
 	// Use this for initialization
 	void Start () {
@@ -24,6 +26,7 @@ public class CountTour : MonoBehaviour {
 		didMove = false;
 		currentCase = null;
 		playerScript = new CubeController[nbPlayer];
+		aStarResult = new List<NodeClass>();
 
 		//Look in the scene for objects with tag "Player"
 		players = GameObject.FindGameObjectsWithTag ("Player");
@@ -60,12 +63,13 @@ public class CountTour : MonoBehaviour {
 				this.currentCase = hit.collider.gameObject;
 				this.currentCase.renderer.material = highlightMaterial;
 				mousePositionOver = new Vector3(hit.collider.transform.position.x, 0.5f, hit.collider.transform.position.z);
-				aStar.init(players[tour%nbPlayer].transform.position, mousePositionOver);
-				Debug.Log (mousePositionOver);
+				aStarResult = aStar.init(players[tour%nbPlayer].transform.position, mousePositionOver);
+				//hilightPath();
+				//Debug.Log (mousePositionOver);
 			}
 			else //if the raycast does not touch the ground or is too far from the player
 			{
-				Debug.Log("Raycast no Ground");
+				Debug.Log("Raycast no Ground or too far");
 				//set the current case position back to null and reset the material of the previous one
 				if (this.currentCase != null)
 				{
@@ -132,5 +136,28 @@ public class CountTour : MonoBehaviour {
 //				tour += 1;
 //		}
 	
+	}
+
+	private void hilightPath()
+	{
+//		Debug.Log("hilightPath");
+//		Vector3 testRay = new Vector3();
+//		for(int i = 0; i < aStarResult.Count-1; i++)
+//		{
+//			//testRay = new Vector3(aStarResult[i].getNodePosition().x, aStarResult[i].getNodePosition().y + 1, aStarResult[i].getNodePosition().z);
+//			//ray = Camera.main.ScreenPointToRay (aStarResult[i].getNodePosition());
+//			if (Physics.Raycast (aStarResult[i].getNodePosition(),aStarResult[i+1].getNodePosition(), out hit))
+//			{
+//				Debug.Log("hilightPath raycast hit" );
+//				//if the ray touch the ground
+//				if (hit.collider.tag == "Ground") 
+//				{				
+//					Debug.Log("Raycast True : " + i);
+//					//set the new current case highlighted position
+//					this.currentCase = hit.collider.gameObject;
+//					this.currentCase.renderer.material = highlightMaterial;
+//				}
+//			}
+//		}
 	}
 }
