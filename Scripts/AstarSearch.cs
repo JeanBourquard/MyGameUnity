@@ -54,6 +54,7 @@ public class AstarSearch {
 		{
 			lowestFvalue = 1000;
 			lowestFindex = 1000;
+
 			//look for the lowest f value in the open list
 			for (int i = 0; i < openList.Count; i++)
 			{
@@ -66,15 +67,14 @@ public class AstarSearch {
 			}
 			//add the element with the lowest f value of the open list in the close list
 			closeList.Add (openList [lowestFindex]);
-			Debug.Log ("arriving Position : " + arrivingPosition);
-			Debug.Log("last element of close list : " + closeList.Last().getNodePosition());
 			//then remove it from the open list
 			openList.RemoveAt (lowestFindex);
+
 			//if the element added in the close list is the arriving point, then stop the algorithm
 			if (closeList.Last ().getNodePosition () == arrivingPosition)
 			{
 				findPath();
-				Debug.Log("arriving position reached");
+				break;
 			}
 			//else continue
 			else
@@ -86,6 +86,7 @@ public class AstarSearch {
 				computeChildren(movementAllowed);
 			}
 		}while(closeList.Last().getNodePosition() != arrivingPosition || openList.Count <= 0);
+		//until the openList is empty or the last element of close list equal to arriving position
 	}
 
 	//function checking the collisions around a position
@@ -93,6 +94,7 @@ public class AstarSearch {
 	{
 		bool[] allowMovement =  new [] {true, true, true, true};
 		RaycastHit hit;
+
 		//watch every element of the table
 		for (int i = 0; i < allowMovement.Length; i++)
 		{
@@ -110,6 +112,7 @@ public class AstarSearch {
 	private void computeChildren(bool[] allowMovement)
 	{
 		bool check = true;
+
 		for(int i = 0; i < allowMovement.Length; i++)
 		{
 			//if the movement is allowed
@@ -123,22 +126,33 @@ public class AstarSearch {
 				nodeTemp2.setG(nodeTemp2.getParentG() + 1 );
 				nodeTemp2.setF(nodeTemp2.getG() + nodeTemp2.getH());
 				check = true;
+
 				for(int j = 0; j < closeList.Count; j++)
 				{
-
+					//if the child is in the close list
 					if(closeList[j].getNodePosition() == nodeTemp2.getNodePosition())
+					{
+						//set check boolean to false and break the for instruction
 					   check = false;
-					Debug.Log("<<<<<<<<<<<<<<<closeList element : " + closeList[j].getNodePosition() + "  " + nodeTemp2.getNodePosition() + "  " + check + j);
-				}
-				for(int k = 0; k < openList.Count; k++)
-				{
-					if(openList[k].getNodePosition() == nodeTemp2.getNodePosition() && openList[k].getF() < nodeTemp2.getF())
-						check = false;
-					Debug.Log("<<<<<<<<<<<<<<<openList element : " + openList[k].getNodePosition() + openList[k].getF() +  "  " + nodeTemp2.getNodePosition() + nodeTemp2.getF() + "  " + check + k);
+						break;
+					}
 				}
 				if(check == true)
 				{
-					Debug.Log("-----------child and weight : " +  nodeTemp2.getNodePosition() + "  " + nodeTemp2.getF());
+					for(int k = 0; k < openList.Count; k++)
+					{
+						//if the child is already in the openlist and its weight is lower of equal
+						if(openList[k].getNodePosition() == nodeTemp2.getNodePosition() && openList[k].getF() <= nodeTemp2.getF())
+						{
+							//set check boolean to false and break the for instruction
+							check = false;
+							break;
+						}
+					}
+				}
+				//if ckeck is true (means the child is not is the close list and the open list
+				if(check == true)
+				{
 					//and add it to the openlist
 					openList.Add(nodeTemp2);
 				}
@@ -146,23 +160,28 @@ public class AstarSearch {
 		}
 	}
 
+	//compute the path according to the close list's elements
 	private void findPath()
 	{
-//		int i = 0;
-//		path.Add(closeList.Last());
-//		do
-//		{
-//			for(int j = 0; j < closeList.Count; j++)
-//			{
-//				if(path[i].getParent() == closeList[j].getNodePosition())
-//					path.Add(closeList[j]);
-//			}
-//			i++;
-//		}while(path[i-1].getNodePosition() != startingPosition);
-//		for (int k = 0; k < path.Count; k++)
-//		{
-//			Debug.Log("Path " + k + " : " + path[k].getNodePosition());
-//		}
+		int i = 0;
+		//add the last element of the close list which is the arriving point
+		path.Add(closeList.Last());
+
+		do
+		{
+			for(int j = 0; j < closeList.Count; j++)
+			{
+				//if the parent of the close list's node is the node we just added in the path result
+				if(path[i].getParent() == closeList[j].getNodePosition())
+				{
+					//then add it to the path also and break the for instruction
+					path.Add(closeList[j]);
+					break;
+				}
+			}
+			i++;
+		}while(path[i-1].getNodePosition() != startingPosition);
+		//until we add the starting point to the path which means we computed all the path
 	}
 	
 }
