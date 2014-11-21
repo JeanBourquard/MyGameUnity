@@ -3,7 +3,7 @@ MyGameUnity
 
 Dofus pvp game like created with Unity. Code in C#
 
-Todo list :
+Todo list :  
 _modification of the turn mecanism (add button to allow the player to pass his turn whenever he wants instead of passing it automatically just after de movement is done)  
 
 _add of fighting mecanism  
